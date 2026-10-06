@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Imcolmedica S.A. · Herramienta de liquidez y flujo de caja</title>
+<style>
+:root{--bg:#f2f5f4;--cd:#fff;--tx:#10231f;--mu:#586a66;--ln:#d5dedb;--ac:#0f6b5c;--ok:#1b8a4b;--wa:#b87800;--bd:#c0392b;--hl:#e6f1ee;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1816;--cd:#15231f;--tx:#e6efec;--mu:#9bb0aa;--ln:#2a3d38;--ac:#4fc3ad;--ok:#4cc57f;--wa:#e0aa3a;--bd:#ef7b6e;--hl:#1c332d}}
+:root[data-theme="dark"]{--bg:#0e1816;--cd:#15231f;--tx:#e6efec;--mu:#9bb0aa;--ln:#2a3d38;--ac:#4fc3ad;--ok:#4cc57f;--wa:#e0aa3a;--bd:#ef7b6e;--hl:#1c332d}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{padding:22px 20px 8px;max-width:1180px;margin:auto}
+h1,h2,h3{font-family:Georgia,"Times New Roman",serif;font-weight:700;margin:0}
+h1{font-size:26px}h2{font-size:21px;margin:6px 0 4px}h3{font-size:17px;margin:20px 0 8px}
+.sub{color:var(--mu);margin:4px 0 0;max-width:80ch}
+nav{display:flex;gap:6px;flex-wrap:wrap;max-width:1180px;margin:12px auto 0;padding:0 20px}
+nav button{border:1px solid var(--ln);background:var(--cd);color:var(--tx);padding:8px 12px;border-radius:6px;cursor:pointer;font:inherit}
+nav button[aria-selected=true]{background:var(--ac);color:#fff;border-color:var(--ac)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+main{max-width:1180px;margin:14px auto 40px;padding:0 20px}
+.cd{background:var(--cd);border:1px solid var(--ln);border-radius:8px;padding:16px;margin-bottom:16px}
+.sc{overflow-x:auto}table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+th,td{padding:6px 10px;border-bottom:1px solid var(--ln);text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left;white-space:normal}th{font-weight:600;color:var(--mu);font-size:13px}
+tr.b td{font-weight:700;background:var(--hl)}.neg{color:var(--bd)}.pos{color:var(--ok)}
+.bn{border:1px solid var(--wa);background:var(--hl);padding:10px 14px;border-radius:8px;margin-bottom:14px}
+.bn.er{border-color:var(--bd)}
+td input{width:110px;text-align:right;background:var(--bg);color:var(--tx);border:1px solid var(--ln);border-radius:4px;padding:4px 6px;font:inherit}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.g label{display:flex;flex-direction:column;font-size:13px;color:var(--mu);gap:3px}
+.g input{background:var(--bg);color:var(--tx);border:1px solid var(--ln);border-radius:4px;padding:6px;font:inherit}
+.btn{background:var(--ac);color:#fff;border:0;border-radius:6px;padding:8px 14px;cursor:pointer;font:inherit;margin:0 8px 8px 0}.btn.s{background:var(--cd);color:var(--tx);border:1px solid var(--ln)}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+.bar{display:flex;height:26px;border-radius:4px;overflow:hidden;margin:6px 0}.bar span{color:#fff;font-size:12px;padding:4px 6px;white-space:nowrap;overflow:hidden}
+.note{color:var(--mu);font-size:13px;max-width:90ch}
+.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px}.kp div{background:var(--cd);border:1px solid var(--ln);border-radius:8px;padding:12px}.kp b{display:block;font-size:22px;font-family:Georgia,serif}.kp small{color:var(--mu)}
+</style></head><body>
+<header><h1>Imcolmedica S.A. · Herramienta de liquidez y flujo de caja</h1>
+<p class="sub">Propuesta de mejoramiento de la operación financiera 2024-2025. Todas las cifras en millones de pesos colombianos (MM COP). Los cálculos se actualizan al instante con los datos de la pestaña «Datos».</p></header>
+<nav id="nav" role="tablist"></nav><main id="m"></main>
+<script>
+const E=[['ing','Ingresos operacionales'],['cv','Costo de ventas'],['gv','Gastos de ventas'],['ga','Gastos de administración'],['otr','Otros ingresos/(gastos) operacionales, neto'],['dep','Depreciación y amortización (informativa; ya incluida en costos y gastos)'],['ifi','Ingresos financieros'],['gf','Gastos financieros'],['imp','Impuesto de renta']];
+const B=[['efe','Efectivo y equivalentes'],['cxc','Cuentas por cobrar comerciales'],['inv','Inventarios'],['oac','Otros activos corrientes'],['ppe','Propiedad, planta y equipo neto'],['oanc','Otros activos no corrientes'],['ofcp','Obligaciones financieras de corto plazo'],['prov','Proveedores y cuentas por pagar comerciales'],['opc','Otros pasivos corrientes'],['plp','Pasivos no corrientes'],['pat','Patrimonio']];
+const X=[['fco','Flujo de efectivo operativo (FCO)'],['capex','Inversión en activos fijos, CAPEX (valor positivo)'],['fci','Flujo de inversión total (con signo)'],['ffin','Flujo de financiación (con signo)']];
+const DEMO={y24:{ing:53938,cv:40400,gv:6000,ga:4200,otr:0,dep:900,ifi:100,gf:1500,imp:678,efe:5600,cxc:10032,inv:36800,oac:2500,ppe:18300,oanc:12500,ofcp:17500,prov:9800,opc:4200,plp:14232,pat:40000,fco:1200,capex:800,fci:-800,ffin:0},
+y25:{ing:60000,cv:44456,gv:6879,ga:4400,otr:0,dep:950,ifi:100,gf:2100,imp:793,efe:3200,cxc:12415,inv:40317,oac:2800,ppe:18000,oanc:13000,ofcp:22000,prov:9500,opc:4500,plp:12260,pat:41472,fco:-3000,capex:1000,fci:-1000,ffin:1600}};
+const V0={rf:4.3,beta:0.85,prima:5.5,rp:2.5,icop:5.1,iusd:2.5,kd:13,t:35,wd:35,g1:8,g2:8,g3:7,g4:6,g5:5,gt:3.5,dm:0,dso:60,dio:240,dpo:90,yrs:3,deu:''};
+const LS='imc_liquidez_v1';let S,tab=0;
+try{S=JSON.parse(localStorage.getItem(LS))}catch(e){}
+if(!S||!S.d)S={demo:true,d:JSON.parse(JSON.stringify(DEMO)),v:{...V0}};
+const save=()=>{try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}};
+const num=(y,k)=>+S.d[y][k]||0,dv=(a,b)=>b?a/b:NaN,fin=isFinite;
+const f0=n=>fin(n)?Math.round(n).toLocaleString('es-CO'):'n/d';
+const pc=n=>fin(n)?(n*100).toLocaleString('es-CO',{minimumFractionDigits:1,maximumFractionDigits:1})+' %':'n/d';
+const x2=n=>fin(n)?n.toLocaleString('es-CO',{minimumFractionDigits:2,maximumFractionDigits:2}):'n/d';
+const d1=n=>fin(n)?n.toLocaleString('es-CO',{minimumFractionDigits:1,maximumFractionDigits:1}):'n/d';
+const sg=(s,n)=>`<span class="${n<0?'neg':''}">${s}</span>`;
+function c(y){const o={};[...E,...B,...X].forEach(([k])=>o[k]=num(y,k));
+o.ub=o.ing-o.cv;o.uo=o.ub-o.gv-o.ga+o.otr;o.ebitda=o.uo+o.dep;o.uai=o.uo+o.ifi-o.gf;o.un=o.uai-o.imp;
+o.ac=o.efe+o.cxc+o.inv+o.oac;o.at=o.ac+o.ppe+o.oanc;o.pc=o.ofcp+o.prov+o.opc;o.pt=o.pc+o.plp;o.ptp=o.pt+o.pat;o.vne=o.fco+o.fci+o.ffin;
+o.rc=dv(o.ac,o.pc);o.pa=dv(o.ac-o.inv,o.pc);o.kt=o.ac-o.pc;o.ktno=o.cxc+o.inv-o.prov;
+o.dso=dv(o.cxc,o.ing)*365;o.dio=dv(o.inv,o.cv)*365;o.dpo=dv(o.prov,o.cv)*365;o.ccc=o.dso+o.dio-o.dpo;
+o.fcl=o.fco-o.capex;o.cal=dv(o.fco,o.un);return o}
+const tbl=(h,r)=>`<div class="sc"><table><thead><tr>${h.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${r.map(q=>`<tr class="${q.b?'b':''}">${q.t.map(x=>`<td>${x}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+function stmt(title,rows,base){const a=c('y24'),b=c('y25');
+return `<h3>${title}</h3>`+tbl(['Concepto','2024','% vertical','2025','% vertical','Δ $ (horiz.)','Δ % (horiz.)'],rows.map(([l,k,s])=>{const A=a[k],Bv=b[k],d=Bv-A;return{b:s,t:[l,sg(f0(A),A),pc(dv(A,a[base])),sg(f0(Bv),Bv),pc(dv(Bv,b[base])),sg(f0(d),d),sg(pc(dv(d,Math.abs(A))),d)]}}))}
+function checks(){const a=c('y24'),b=c('y25'),m=[];
+[['2024',a],['2025',b]].forEach(([y,o])=>{const d=o.at-o.ptp;m.push(Math.abs(d)<1?`Balance ${y}: cuadra (Activo = Pasivo + Patrimonio).`:`<b class="neg">Balance ${y}: descuadre de ${f0(d)} MM (Activo − Pasivo − Patrimonio). Revise las cifras.</b>`)});
+const de=b.efe-a.efe,df=b.vne-de;m.push(Math.abs(df)<1?'Flujo 2025: FCO + inversión + financiación = variación del efectivo.':`<b class="neg">Flujo 2025: FCO + inversión + financiación (${f0(b.vne)}) ≠ variación del efectivo en balance (${f0(de)}); diferencia ${f0(df)} MM.</b>`);
+return m.join('<br>')}
+function dataTab(){const row=(l,k)=>`<tr><td>${l}</td>${['y24','y25'].map(y=>`<td><input type="number" step="any" data-y="${y}" data-k="${k}" value="${S.d[y][k]===''||S.d[y][k]==null?'':S.d[y][k]}"></td>`).join('')}</tr>`;
+const t=(n,L)=>`<h3>${n}</h3><div class="sc"><table><thead><tr><th>Concepto</th><th>2024</th><th>2025</th></tr></thead><tbody>${L.map(([k,l])=>row(l,k)).join('')}</tbody></table></div>`;
+return `${S.demo?'<div class="bn er"><b>Datos de demostración.</b> Las cifras precargadas son ilustrativas: solo reproducen los indicadores de la propuesta (cuentas por cobrar 12.415 MM, +23,76 %; ventas +11,24 %; costo de ventas +10,04 %; gasto de venta +14,65 %; inventarios 44,93 % del activo y 331 días). No son los estados financieros de Imcolmedica. Pulse «Vaciar todo» e ingrese las cifras de los estados financieros IFRS 2024 y 2025 (Superintendencia de Sociedades).</div>':''}
+<button class="btn" id="bd">Cargar datos de demostración</button><button class="btn s" id="bv">Vaciar todo</button><button class="btn s" id="bx">Exportar datos (JSON)</button><button class="btn s" id="bi">Importar datos (JSON)</button><div id="ex"></div>
+<div class="cd"><b>Verificaciones de coherencia</b><div id="ck" class="note" style="margin-top:6px">${checks()}</div></div>
+${t('Estado de resultados',E)}${t('Balance general',B)}${t('Flujo de efectivo',X)}
+<p class="note">Los datos se guardan en este navegador. Los totales, razones y proyecciones se calculan automáticamente.</p>`}
+function horiz(){return `<h2>Objetivo 1 · Análisis horizontal y vertical 2024-2025</h2><p class="note">Vertical: estado de resultados y flujo sobre ingresos; balance sobre activo total. Horizontal: variación absoluta y porcentual 2025 frente a 2024.</p>`+
+stmt('Estado de resultados',[['Ingresos operacionales','ing'],['Costo de ventas','cv'],['Utilidad bruta','ub',1],['Gastos de ventas','gv'],['Gastos de administración','ga'],['Otros operacionales, neto','otr'],['Utilidad operacional','uo',1],['EBITDA','ebitda',1],['Ingresos financieros','ifi'],['Gastos financieros','gf'],['Utilidad antes de impuestos','uai',1],['Impuesto de renta','imp'],['Utilidad neta','un',1]],'ing')+
+stmt('Balance general',[['Efectivo','efe'],['Cuentas por cobrar','cxc'],['Inventarios','inv'],['Otros activos corrientes','oac'],['Activo corriente','ac',1],['PP&E neto','ppe'],['Otros activos no corrientes','oanc'],['Activo total','at',1],['Obligaciones financieras CP','ofcp'],['Proveedores','prov'],['Otros pasivos corrientes','opc'],['Pasivo corriente','pc',1],['Pasivos no corrientes','plp'],['Pasivo total','pt',1],['Patrimonio','pat',1]],'at')+
+stmt('Flujo de efectivo',[['Flujo operativo (FCO)','fco',1],['CAPEX','capex'],['Flujo de inversión','fci'],['Flujo de financiación','ffin'],['Variación neta del efectivo','vne',1],['Flujo de caja libre (FCO − CAPEX)','fcl',1]],'ing')}
+function drivers(){const a=c('y24'),b=c('y25'),it=[['Costo de ventas','cv'],['Utilidad bruta','ub'],['Gastos de ventas','gv'],['Gastos de administración','ga'],['Utilidad operacional','uo'],['EBITDA','ebitda'],['Gastos financieros','gf'],['Utilidad neta','un']];
+const mb0=dv(a.ub,a.ing),mb1=dv(b.ub,b.ing),vol=(b.ing-a.ing)*mb0,mar=b.ing*(mb1-mb0),dun=b.un-a.un;
+const w=[['Δ Utilidad bruta',b.ub-a.ub,1],['  (−) Δ Gastos de ventas',-(b.gv-a.gv)],['  (−) Δ Gastos de administración',-(b.ga-a.ga)],['  (+) Δ Otros operacionales',b.otr-a.otr],['= Δ Utilidad operacional',b.uo-a.uo,1],['  (+) Δ Ingresos financieros',b.ifi-a.ifi],['  (−) Δ Gastos financieros',-(b.gf-a.gf)],['  (−) Δ Impuesto',-(b.imp-a.imp)],['= Δ Utilidad neta',dun,1]];
+return `<h2>Objetivo 2 · Impulsores de ingresos, costos y utilidades</h2>
+<h3>Estructura de costos y márgenes (% de ingresos)</h3>`+tbl(['Partida','2024','2025','Δ puntos porcentuales','Crecimiento 2025'],it.map(([l,k])=>[l,pc(dv(a[k],a.ing)),pc(dv(b[k],b.ing)),sg(d1((dv(b[k],b.ing)-dv(a[k],a.ing))*100)+' pp',dv(b[k],b.ing)-dv(a[k],a.ing)),pc(dv(b[k]-a[k],Math.abs(a[k])))]).map(t=>({t,b:/Utilidad|EBITDA/.test(t[0])})))+
+`<h3>Descomposición de la utilidad bruta</h3>`+tbl(['Efecto','MM COP'],[{t:['Efecto volumen: Δ ingresos × margen bruto 2024',sg(f0(vol),vol)]},{t:['Efecto margen: ingresos 2025 × Δ margen bruto',sg(f0(mar),mar)]},{b:1,t:['Δ Utilidad bruta total',sg(f0(vol+mar),vol+mar)]}])+
+`<h3>Puente de la variación de la utilidad neta 2024 → 2025</h3>`+tbl(['Partida','Aporte (MM COP)','% de la Δ utilidad neta'],w.map(([l,v,s])=>({b:s,t:[l,sg(f0(v),v),pc(dv(v,Math.abs(dun)))]})))+
+`<p class="note">Lectura: si los gastos de venta crecen más que los ingresos, parte del margen bruto se consume antes de llegar a la utilidad operacional; si los gastos financieros crecen, el costo de financiar cartera e inventarios reduce la utilidad neta.</p>`}
+function liq(){const a=c('y24'),b=c('y25');
+const r=[['Razón corriente (veces)',a.rc,b.rc,x2],['Prueba ácida (veces)',a.pa,b.pa,x2],['Capital de trabajo contable (MM)',a.kt,b.kt,f0],['KTNO: cartera + inventarios − proveedores (MM)',a.ktno,b.ktno,f0],['KTNO como % de ingresos',dv(a.ktno,a.ing),dv(b.ktno,b.ing),pc],['Días de cartera (DSO)',a.dso,b.dso,d1],['Días de inventario (DIO)',a.dio,b.dio,d1],['Días de proveedores (DPO)',a.dpo,b.dpo,d1],['Ciclo de conversión de efectivo (días)',a.ccc,b.ccc,d1],['Rotación de cartera (veces)',dv(a.ing,a.cxc),dv(b.ing,b.cxc),x2],['Rotación de inventarios (veces)',dv(a.cv,a.inv),dv(b.cv,b.inv),x2],['Utilidad neta (MM)',a.un,b.un,f0],['Flujo operativo FCO (MM)',a.fco,b.fco,f0],['Calidad de la utilidad: FCO / utilidad neta (veces)',a.cal,b.cal,x2],['Flujo de caja libre FCO − CAPEX (MM)',a.fcl,b.fcl,f0]];
+const dB=b.cxc-a.cxc,dI=b.inv-a.inv,dP=b.prov-a.prov,est=b.un+b.dep-dB-dI+dP;
+const tot=Math.max(b.dso+b.dio,1),bar=`<div class="bar"><span style="width:${b.dso/tot*100}%;background:#2f7fb8">Cartera ${d1(b.dso)} d</span><span style="width:${b.dio/tot*100}%;background:#0f6b5c">Inventario ${d1(b.dio)} d</span></div><div class="note">Ciclo operativo (DSO + DIO) = ${d1(b.dso+b.dio)} días; se financian ${d1(b.dpo)} días con proveedores, el resto (${d1(b.ccc)} días) con deuda o patrimonio.</div>`;
+return `<h2>Objetivo 3 · Flujo operativo y ciclo de conversión de efectivo</h2><p class="note">Días calculados sobre saldos al cierre y año de 365 días (con un solo corte anual no hay promedios). DSO = cartera/ingresos×365; DIO = inventarios/costo de ventas×365; DPO = proveedores/costo de ventas×365.</p>`+tbl(['Indicador','2024','2025','Cambio'],r.map(([l,x,y,f])=>({b:/Ciclo|FCO|Calidad/.test(l),t:[l,f(x),f(y),sg(f(y-x),y-x)]})))+bar+
+`<h3>Del resultado contable al flujo operativo 2025 (estimación indirecta con saldos de balance)</h3>`+tbl(['Concepto','MM COP'],[{t:['Utilidad neta',f0(b.un)]},{t:['(+) Depreciación y amortización',f0(b.dep)]},{t:['(−) Aumento de cuentas por cobrar',sg(f0(-dB),-dB)]},{t:['(−) Aumento de inventarios',sg(f0(-dI),-dI)]},{t:['(+) Aumento de proveedores',sg(f0(dP),dP)]},{b:1,t:['FCO estimado antes de otros rubros',sg(f0(est),est)]},{t:['FCO reportado',sg(f0(b.fco),b.fco)]},{t:['Diferencia (otros pasivos, impuestos, intereses, otros)',sg(f0(b.fco-est),b.fco-est)]}])}
+const sem=(v,o,w,hb)=>{if(!fin(v))return'<span class="dot" style="background:var(--mu)"></span>n/d';const g=hb?v>=o:v<=o,y=hb?v>=w:v<=w;const[c1,t]=g?['var(--ok)','Bajo']:y?['var(--wa)','Atención']:['var(--bd)','Alto'];return`<span class="dot" style="background:${c1}"></span>${t}`};
+function risk(){const a=c('y24'),b=c('y25');
+const r=[['Razón corriente',a.rc,b.rc,x2,'Alto < 1,0 · Atención 1,0-1,5 · Bajo ≥ 1,5',1.5,1,1],['Prueba ácida',a.pa,b.pa,x2,'Alto < 0,7 · Atención 0,7-1,0 · Bajo ≥ 1,0',1,0.7,1],['Días de cartera',a.dso,b.dso,d1,'Bajo ≤ 45 · Atención ≤ 75 · Alto > 75',45,75,0],['Días de inventario',a.dio,b.dio,d1,'Bajo ≤ 120 · Atención ≤ 200 · Alto > 200',120,200,0],['Ciclo de conversión (días)',a.ccc,b.ccc,d1,'Bajo ≤ 90 · Atención ≤ 150 · Alto > 150',90,150,0],['Calidad utilidad FCO/UN',a.cal,b.cal,x2,'Alto < 0 · Atención 0-1 · Bajo ≥ 1',1,0,1],['Deuda CP / pasivo total',dv(a.ofcp,a.pt),dv(b.ofcp,b.pt),pc,'Bajo ≤ 30 % · Atención ≤ 50 % · Alto > 50 %',.3,.5,0],['Deuda financiera total / EBITDA (veces)',dv(a.ofcp+a.plp,a.ebitda),dv(b.ofcp+b.plp,b.ebitda),x2,'Bajo ≤ 3 · Atención ≤ 4,5 · Alto > 4,5 (supone que los pasivos no corrientes son deuda)',3,4.5,0],['Cobertura de intereses EBIT / gastos financieros',dv(a.uo,a.gf),dv(b.uo,b.gf),x2,'Alto < 1,5 · Atención 1,5-3 · Bajo ≥ 3',3,1.5,1],['Endeudamiento total (pasivo/activo)',dv(a.pt,a.at),dv(b.pt,b.at),pc,'Bajo ≤ 50 % · Atención ≤ 65 % · Alto > 65 %',.5,.65,0]];
+return `<h2>Objetivo 4 · Riesgos financieros: liquidez, cartera y endeudamiento de corto plazo</h2><p class="note">Los umbrales son referencias generales de análisis financiero, no normas; ajústelos al promedio del sector (CIIU 4669) cuando disponga de benchmarks. El semáforo evalúa 2025.</p>`+tbl(['Indicador','2024','2025','Nivel de riesgo 2025','Umbral de referencia'],r.map(([l,x,y,f,u,o,w,h])=>({t:[l,f(x),f(y),`<span style="text-align:left;display:inline-block">${sem(y,o,w,h)}</span>`,`<span class="note">${u}</span>`]})))}
+function val(sc,w,gT){const b=c('y25'),V=S.v,p=k=>(+V[k]||0)/100;
+const mb=dv(b.ub,b.ing)+p('dm'),gvp=dv(b.gv,b.ing),gap=dv(b.ga,b.ing),dp=dv(b.dep,b.ing),cp=dv(b.capex,b.ing),tx=p('t');
+const d0=[dv(b.cxc,b.ing)*365,dv(b.inv,b.cv)*365,dv(b.prov,b.cv)*365],tg=[V.dso,V.dio,V.dpo].map((x,i)=>x===''||!fin(+x)?d0[i]:+x),yr=Math.max(+V.yrs||1,1);
+let ing=b.ing,kp=b.ktno,pv=0,rows=[],nopD,kn;
+for(let t=1;t<=5;t++){ing*=1+p('g'+t);const cv=ing*(1-mb),k=Math.min(t/yr,1),d=d0.map((x,i)=>sc?x+(tg[i]-x)*k:x);
+kn=d[0]*ing/365+(d[1]-d[2])*cv/365;const ebit=ing*(mb-gvp-gap),nop=ebit-Math.max(ebit,0)*tx,dep=ing*dp,cx=ing*cp,f=nop+dep-cx-(kn-kp);
+rows.push({t,ing,ebit,ebitda:ebit+dep,nop,dep,cx,dk:kn-kp,kn,f});kp=kn;pv+=f/Math.pow(1+w,t);nopD=nop+dep-cx}
+const ft=nopD*(1+gT)-kn*gT,tv=w>gT?ft/(w-gT):NaN,pvt=tv/Math.pow(1+w,5),ev=pv+pvt,deu=V.deu!==''&&fin(+V.deu)?+V.deu:b.ofcp+b.plp,eq=ev-deu+b.efe;
+return{rows,pv,tv,pvt,ev,eq,deu}}
+function wacc(){const V=S.v,p=k=>(+V[k]||0)/100,ku=p('rf')+p('beta')*p('prima')+p('rp'),kc=(1+ku)*(1+p('icop'))/(1+p('iusd'))-1;return{ku,kc,w:kc*(1-p('wd'))+p('kd')*(1-p('t'))*p('wd')}}
+function inp(k,l,st){return`<label>${l}<input type="number" step="${st||'any'}" data-v="${k}" value="${S.v[k]}"></label>`}
+function valT(){const b=c('y25'),W=wacc(),gT=(+S.v.gt||0)/100,A=val(0,W.w,gT),M=val(1,W.w,gT),V=S.v;
+const d0=[dv(b.cxc,b.ing)*365,dv(b.inv,b.cv)*365,dv(b.prov,b.cv)*365],tg=[V.dso,V.dio,V.dpo].map((x,i)=>x===''||!fin(+x)?d0[i]:+x);
+const lib=(d0[0]-tg[0])*b.ing/365+(d0[1]-tg[1])*b.cv/365+(tg[2]-d0[2])*b.cv/365,ahorro=lib*(+V.kd/100)*(1-V.t/100);
+const fr=(o)=>o.rows.map(r=>r.f);
+const rowsT=['ing','ebitda','nop','dep','cx','dk','f'].map((k,i)=>({b:k=='f',t:[['Ingresos','EBITDA','NOPAT (EBIT × (1 − t))','(+) Depreciación','(−) CAPEX','(−) Δ KTNO','Flujo de caja libre'][i]+' · actual',...A.rows.map(r=>f0(k=='cx'||k=='dk'?-r[k]:r[k]))]}));
+const rowsM=['ing','ebitda','nop','dep','cx','dk','f'].map((k,i)=>({b:k=='f',t:[['Ingresos','EBITDA','NOPAT','(+) Depreciación','(−) CAPEX','(−) Δ KTNO','Flujo de caja libre'][i]+' · mejorado',...M.rows.map(r=>f0(k=='cx'||k=='dk'?-r[k]:r[k]))]}));
+const cmp=[['Valor presente de FCL 2026-2030',A.pv,M.pv],['Valor presente del valor terminal',A.pvt,M.pvt],['Valor empresa (EV)',A.ev,M.ev],['(−) Deuda financiera',-A.deu,-M.deu],['(+) Efectivo',b.efe,b.efe],['Valor intrínseco del patrimonio',A.eq,M.eq]].map(([l,x,y])=>({b:/Valor empresa|intrínseco/.test(l),t:[l,f0(x),f0(y),sg(f0(y-x),y-x)]}));
+const ctr=[['Patrimonio contable 2025',b.pat,b.pat],['Valor intrínseco / patrimonio contable (veces)',dv(A.eq,b.pat),dv(M.eq,b.pat)],['Valor intrínseco / utilidad neta 2025 (veces)',dv(A.eq,b.un),dv(M.eq,b.un)],['EV / EBITDA 2025 (veces)',dv(A.ev,b.ebitda),dv(M.ev,b.ebitda)],['Valor terminal como % del EV',dv(A.pvt,A.ev),dv(M.pvt,M.ev)]].map(([l,x,y])=>{const f=/%/.test(l)?pc:/veces/.test(l)?x2:f0;return{t:[l,f(x),f(y),'']}});
+const ws=[-.02,-.01,0,.01,.02],gs=[-.01,0,.01];
+const sens=tbl(['WACC \\ g terminal',...gs.map(g=>pc(gT+g))],ws.map(d=>({t:[pc(W.w+d),...gs.map(g=>f0(val(1,W.w+d,gT+g).eq))]})));
+return `<h2>Objetivo 5 · Mejoramiento del capital de trabajo y valoración por flujo de caja libre</h2>
+<div class="kp"><div><small>Caja liberada por la mejora del ciclo</small><b>${f0(lib)} MM</b></div><div><small>Ahorro financiero anual estimado (después de impuestos)</small><b>${f0(ahorro)} MM</b></div><div><small>Valor del patrimonio: actual → mejorado</small><b>${f0(A.eq)} → ${f0(M.eq)}</b></div><div><small>WACC (COP nominal)</small><b>${pc(W.w)}</b></div></div>
+<div class="cd"><b>Metas de gestión del capital de trabajo (escenario mejorado)</b><div class="g" style="margin-top:8px">${inp('dso','Meta días de cartera')}${inp('dio','Meta días de inventario')}${inp('dpo','Meta días de proveedores')}${inp('yrs','Años para alcanzar la meta (1-5)','1')}${inp('dm','Cambio en margen bruto (puntos %)')}</div>
+<p class="note">Caja liberada = (DSO actual − meta)×ingresos/365 + (DIO actual − meta)×costo/365 + (DPO meta − actual)×costo/365, con saldos 2025. Las metas son supuestos editables: dependen de la capacidad de cobro, de la rotación por categoría y de la negociación con proveedores internacionales.</p></div>
+<div class="cd"><b>Supuestos de valoración</b><div class="g" style="margin-top:8px">${inp('rf','Tasa libre de riesgo USD (%)')}${inp('beta','Beta apalancado')}${inp('prima','Prima de mercado (%)')}${inp('rp','Riesgo país (%)')}${inp('icop','Inflación Colombia (%)')}${inp('iusd','Inflación EE. UU. (%)')}${inp('kd','Costo de la deuda antes de impuestos (%)')}${inp('t','Tasa de impuesto (%)')}${inp('wd','Deuda / (deuda + patrimonio) objetivo (%)')}${inp('g1','Crecimiento ingresos año 1 (%)')}${inp('g2','Año 2 (%)')}${inp('g3','Año 3 (%)')}${inp('g4','Año 4 (%)')}${inp('g5','Año 5 (%)')}${inp('gt','Crecimiento terminal g (%)')}${inp('deu','Deuda financiera total (MM; vacío = obligaciones CP + pasivos no corrientes)')}</div>
+<p class="note">Ke USD = rf + β × prima + riesgo país; Ke COP = (1 + Ke USD) × (1 + inflación COP)/(1 + inflación USD) − 1. Ke USD = ${pc(W.ku)}; Ke COP = ${pc(W.kc)}. Los parámetros precargados son supuestos de partida: sustitúyalos por fuentes citables (Damodaran, Banco de la República, bonos del Tesoro de EE. UU.). Descuento a fin de año; proyección 2026-2030.</p></div>
+<h3>Flujo de caja libre proyectado (MM COP)</h3>`+tbl(['Concepto',...[2026,2027,2028,2029,2030]],[...rowsT,...rowsM])+
+`<h3>Valor intrínseco: escenario actual vs. mejorado</h3>`+tbl(['Concepto','Actual (días constantes)','Mejorado (metas)','Diferencia'],cmp)+
+`<h3>Contraste con los resultados contables</h3>`+tbl(['Referencia','Actual','Mejorado',''],ctr)+
+`<h3>Sensibilidad del patrimonio (escenario mejorado, MM COP)</h3>`+sens+
+(w=>w>gT?'':'<p class="neg">El WACC debe ser mayor que g para calcular el valor terminal.</p>')(W.w)}
+const TABS=[['Datos',dataTab],['1 · Horizontal y vertical',horiz],['2 · Impulsores',drivers],['3 · Liquidez y ciclo de efectivo',liq],['4 · Riesgos',risk],['5 · Mejoramiento y valoración',valT]];
+function draw(){document.getElementById('nav').innerHTML=TABS.map((t,i)=>`<button role="tab" aria-selected="${i==tab}" data-t="${i}">${t[0]}</button>`).join('');
+document.getElementById('m').innerHTML=`<div class="cd">${TABS[tab][1]()}</div>`}
+const AL=[['ifi',/ingresos financ/],['gf',/gastos financ/],['otr',/^otros ingresos|^otros (gastos|ingresos)|otros operac/],['oac',/otros activos corr/],['oanc',/otros activos no corr/],['opc',/otros pasivos corr/],['plp',/pasivos? no corr/],['ing',/^ingresos( de actividades ordinarias| operac\w*| ordinarios)?$|^ventas( netas)?$/],['cv',/costo de (ventas|mercanc|venta)/],['gv',/gastos? de venta/],['ga',/gastos? de admin/],['dep',/deprec/],['imp',/impuesto/],['efe',/^efectivo( y equivalentes.*)?$/],['cxc',/cuentas? (comerciales )?por cobrar|deudores|cartera/],['inv',/inventario/],['ppe',/propiedad|^ppe/],['ofcp',/obligaciones financ|prestamos/],['prov',/proveedor|cuentas? (comerciales )?por pagar/],['pat',/patrimonio/],['capex',/capex|adquisicion de (propiedad|activos)/],['fco',/flujo.*(operaci|operativ)|^fco/],['fci',/flujo.*inversi/],['ffin',/flujo.*financiaci/]];
+const norm=s=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').trim();
+function pn(s){s=String(s).trim();if(!s)return NaN;const ng=/^\(.*\)$/.test(s)||/^-/.test(s);s=s.replace(/[()$\s%-]/g,'');if(!s)return NaN;if(s.includes(',')&&s.includes('.'))s=s.replace(/\./g,'').replace(',','.');else if(/^\d{1,3}(\.\d{3})+$/.test(s))s=s.replace(/\./g,'');else if(/^\d{1,3}(,\d{3})+$/.test(s))s=s.replace(/,/g,'');else s=s.replace(',','.');const v=parseFloat(s);return isNaN(v)?NaN:(ng?-v:v)}
+function impTable(txt){const d={y24:{},y25:{}},got=new Set();[...E,...B,...X].forEach(([k])=>{d.y24[k]='';d.y25[k]=''});
+txt.split(/\r?\n/).forEach(l=>{const p=l.split(/\t|;/).map(x=>x.trim()).filter(x=>x!=='');if(p.length<3)return;const v=p.slice(1).map(pn).filter(x=>!isNaN(x));if(v.length<2)return;const lab=norm(p[0]),h=AL.find(([k,r])=>r.test(lab)||lab===k);if(!h||got.has(h[0]))return;const ab=['cv','gv','ga','gf','imp','dep','capex'].includes(h[0])?Math.abs:(x=>x);d.y24[h[0]]=ab(v[v.length-2]);d.y25[h[0]]=ab(v[v.length-1]);got.add(h[0])});return{d,got}}
+function impJson(txt){const t=txt.replace(/```(json)?/g,''),i=t.indexOf('{'),j=t.lastIndexOf('}');if(i<0||j<i)return null;const o=JSON.parse(t.slice(i,j+1)),d=o.d||o,a=d.y24||d['2024'],b=d.y25||d['2025'];if(!a||!b)throw new Error('faltan las secciones y24 y y25');const r={y24:{},y25:{}};[...E,...B,...X].forEach(([k])=>{r.y24[k]=a[k]==null?'':a[k];r.y25[k]=b[k]==null?'':b[k]});return{d:r,v:o.v,demo:!!o.demo}}
+function doImport(txt){if(!txt.trim()){toast('Pegue primero el JSON o la tabla.');return}
+let r=null;try{r=impJson(txt)}catch(e){toast('JSON no válido: '+e.message);return}
+if(r){S={demo:r.demo,d:r.d,v:{...V0,...(r.v||{})}};save();tab=0;draw();toast('Datos importados desde JSON');return}
+const q=impTable(txt);if(q.got.size<5){toast('No reconocí suficientes conceptos (encontré '+q.got.size+'). Use filas «Concepto, 2024, 2025» separadas por tabulación o punto y coma.');return}
+const falt=[...E,...B,...X].filter(([k])=>!q.got.has(k)).map(x=>x[1].split(' (')[0]);S={demo:false,d:q.d,v:S.v};save();tab=0;draw();toast('Importados '+q.got.size+' de '+(E.length+B.length+X.length)+' conceptos. Sin dato: '+(falt.join(', ')||'ninguno'))}
+let armed=0;
+function toast(m){let t=document.getElementById('ts');if(!t){t=document.createElement('div');t.id='ts';t.setAttribute('role','status');t.style.cssText='position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:8px;z-index:9;max-width:90vw';document.body.appendChild(t)}t.textContent=m;t.style.display='block';clearTimeout(t._h);t._h=setTimeout(()=>{t.style.display='none'},4000)}
+window.addEventListener('error',e=>toast('Error: '+e.message));
+function panel(imp){const p=document.getElementById('ex');if(!p)return;p.innerHTML=`<div class="cd"><b>${imp?'Pegue un JSON exportado, o una tabla copiada de Excel con columnas Concepto, 2024, 2025 (en ese orden)':'Datos en formato JSON'}</b><textarea id="tx" rows="8" style="width:100%;margin:8px 0;background:var(--bg);color:var(--tx);border:1px solid var(--ln);border-radius:4px;font:12px monospace">${imp?'':JSON.stringify(S,null,1).replace(/</g,'&lt;')}</textarea><br>${imp?'<button class="btn" id="ba">Aplicar datos</button>':'<button class="btn" id="bc">Copiar</button>'}<button class="btn s" id="bz">Cerrar</button></div>`;document.getElementById('tx').focus()}
+document.addEventListener('click',e=>{const el=e.target.closest('button,[data-t]');if(!el)return;try{
+if(el.dataset.t!==undefined){tab=+el.dataset.t;draw();scrollTo(0,0);return}
+const id=el.id;
+if(id=='bd'){S.d=JSON.parse(JSON.stringify(DEMO));S.demo=true;save();draw();toast('Datos de demostración cargados')}
+else if(id=='bv'){if(!armed){armed=1;el.textContent='Confirmar: vaciar todas las cifras';setTimeout(()=>{armed=0;const q=document.getElementById('bv');if(q)q.textContent='Vaciar todo'},4000)}else{armed=0;['y24','y25'].forEach(y=>[...E,...B,...X].forEach(([k])=>S.d[y][k]=''));S.demo=false;save();draw();toast('Cifras vaciadas. Ingrese los datos reales.')}}
+else if(id=='bx')panel(0);
+else if(id=='bi')panel(1);
+else if(id=='bz'){document.getElementById('ex').innerHTML=''}
+else if(id=='bc'){const t=document.getElementById('tx');t.select();let ok=false;try{ok=document.execCommand('copy')}catch(x){}try{navigator.clipboard.writeText(t.value).catch(()=>{});ok=true}catch(x){}toast(ok?'Datos copiados':'Seleccione el texto y copie con Ctrl+C')}
+else if(id=='ba')doImport(document.getElementById('tx').value);
+}catch(err){toast('Error: '+err.message)}});
+document.addEventListener('input',e=>{const i=e.target;if(i.dataset.k){S.d[i.dataset.y][i.dataset.k]=i.value===''?'':+i.value;save();document.getElementById('ck').innerHTML=checks()}});
+document.addEventListener('change',e=>{const i=e.target;if(i.dataset.v){S.v[i.dataset.v]=i.value;save();const y=scrollY;draw();scrollTo(0,y)}});
+draw();
+</script></body></html>
